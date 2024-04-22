@@ -1,0 +1,23 @@
+api_platform:
+<<<<<<< HEAD
+    title: 'sms apa_api yangiliklar-uz.ru'
+    description: 'Project description'
+    version: '0.0.001'
+=======
+    title: 'sms supervisor dev.api.yangiliklar-uz.ru'
+    description: 'Project description'
+    version: '0.0.011'
+>>>>>>> ab01714259ecd72c6636092d354a31bf30c7b1dc
+
+    mapping:
+        paths: ['%kernel.project_dir%/src/Entity']
+
+    patch_formats:
+        json: ['application/merge-patch+json']
+
+    swagger:
+        versions: [3]
+        api_keys:
+            apiKey:
+                name: Authorization
+                type: header

@@ -1,0 +1,53 @@
+stages:
+    - deploy
+
+before_script:
+    - 'command -v ssh-agent >/dev/null || ( apt-get update -y && apt-get install openssh-client -y )'
+    - eval $(ssh-agent -s)
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+
+deploy-dev-job:
+    stage: deploy
+    only:
+        - dev
+    script:
+        - echo "${DEPLOY_PRIVATE_SSH_KEY_DEV}" | tr -d '\r' | ssh-add -
+        - echo "Deploying the DEV project..."
+<<<<<<< HEAD
+        - ssh -tt -o StrictHostKeyChecking=no -p ${DEPLOY_PORT_DEV:-22} ${DEPLOY_HOST_DEV} \
+            "cd /root/sites/${PROJECT_NAME}-dev/} &&
+=======
+        - ssh -tt -o StrictHostKeyChecking=no -p ${DEPLOY_PORT_PROD:-22} ${DEPLOY_HOST_DEV} \
+            "cd /root/sites/api-yangiliklar-uz-dev/ &&
+>>>>>>> ab01714259ecd72c6636092d354a31bf30c7b1dc
+            git reset --hard &&
+            git pull origin dev &&
+            docker compose down &&
+            docker compose --env-file=.env.local up -d --build &&
+            docker compose exec php composer require symfony/redis-messenger &&
+            docker compose exec php composer install &&
+            docker compose exec php chmod 755 bin/console &&
+            docker compose exec php bin/console c:c"
+
+deploy-prod-job:
+    stage: deploy
+    only:
+        - master
+    script:
+        - echo "${DEPLOY_PRIVATE_SSH_KEY_PROD:-$DEPLOY_PRIVATE_SSH_KEY_DEV}" | tr -d '\r' | ssh-add -
+        - echo "Deploying the PROD project..."
+        - ssh -tt -o StrictHostKeyChecking=no -p ${DEPLOY_PORT_PROD:-${DEPLOY_PORT_DEV:-22}} ${DEPLOY_HOST_PROD:-$DEPLOY_HOST_DEV} \
+            "cd /root/sites/${PROJECT_NAME}/ &&
+            git reset --hard &&
+            git pull origin master &&
+            docker compose down &&
+            docker compose up -d --build &&
+            docker compose exec php composer install &&
+            docker compose exec php chmod 755 bin/console &&
+            docker compose exec php bin/console c:c"
+<<<<<<< HEAD
+        
+=======
+     
+>>>>>>> ab01714259ecd72c6636092d354a31bf30c7b1dc
